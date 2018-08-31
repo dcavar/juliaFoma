@@ -41,7 +41,6 @@ end
 Clears the init-pointer in the Foma library.
 """
 function clearNet(ah)
-    # println("Clearing init")
     ccall((:apply_clear, LIBNAME), Cvoid, (Ptr{Cvoid},), ah)
 end
 
@@ -50,7 +49,6 @@ end
 Frees the memory for the allocated FST.
 """
 function destroyNet(net)
-    # println("Destroying net")
     ccall((:fsm_destroy, LIBNAME), Cvoid, (Ptr{Cvoid},), net)
 end
 
@@ -72,17 +70,30 @@ function applyUp(ah, token)
 end
 
 
+
 """
-Testing the functionality.
+main function.
 """
 function main()
+
     net = loadNet()
     ah = initNet(net)
 
-    # sending the token "calls" through the analyser.
-    result = applyUp(ah, String("calls"))
-    for r in result
-        println(r)
+    if isempty(ARGS)
+        # sending the token "calls" through the analyser.
+        println("calls:")
+        result = applyUp(ah, String("calls"))
+        for r in result
+            println(r)
+        end
+    else
+        for arg in ARGS
+            println("$arg:")
+            result = applyUp(ah, arg)
+            for r in result
+                println(r)
+            end
+        end
     end
 
     clearNet(ah)
